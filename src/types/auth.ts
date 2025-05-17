@@ -32,3 +32,12 @@ export interface LoginResponse {
   user: User;
   token: string;
 }
+
+export interface VerifyOtpData {
+  email: string;
+  otp: string;
+}
+
+export interface RequestOtpResponse {
+  message: string;
+}

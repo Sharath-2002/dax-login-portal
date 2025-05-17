@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import VerificationMessage from '../components/VerificationMessage';
 import { authService } from '../services/authService';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const VerifyEmail: React.FC = () => {
   const [verifying, setVerifying] = useState(false);
