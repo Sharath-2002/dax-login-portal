@@ -41,13 +41,23 @@ const Register: React.FC = () => {
   };
 
   // Resend OTP if needed
-  const handleResendOtp = async () => {
-    return authService.requestRegistrationOtp(email);
+  const handleResendOtp = async (): Promise<void> => {
+    try {
+      await authService.requestRegistrationOtp(email);
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      throw error;
+    }
   };
 
   // Step 2: Verify OTP
-  const handleVerifyOtp = async (data: VerifyOtpData) => {
-    return authService.verifyOtp(data);
+  const handleVerifyOtp = async (data: VerifyOtpData): Promise<void> => {
+    try {
+      await authService.verifyOtp(data);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw error;
+    }
   };
 
   // After OTP verification
