@@ -5,6 +5,7 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
+  name?: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -19,6 +20,7 @@ export interface User {
   id: string;
   email: string;
   isVerified: boolean;
+  name?: string;
 }
 
 export interface AuthState {

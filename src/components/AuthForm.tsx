@@ -6,12 +6,13 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AuthFormProps {
-  type: 'login' | 'register' | 'forgotPassword' | 'resetPassword';
+  type: 'login' | 'register' | 'register-initial' | 'forgotPassword' | 'resetPassword';
   onSubmit: (data: any) => void;
   isLoading: boolean;
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,7 +23,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading }) => {
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
     
-    if (type === 'login' || type === 'register' || type === 'forgotPassword') {
+    if (type === 'register-initial') {
+      if (!name.trim()) {
+        newErrors.name = 'Name is required';
+      }
+    }
+    
+    if (type === 'login' || type === 'register' || type === 'forgotPassword' || type === 'register-initial') {
       if (!email.trim()) {
         newErrors.email = 'Email is required';
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -59,7 +66,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading }) => {
     
     const data: any = {};
     
-    if (type === 'login' || type === 'register' || type === 'forgotPassword') {
+    if (type === 'register-initial') {
+      data.name = name;
+      data.email = email;
+    } else if (type === 'login' || type === 'register' || type === 'forgotPassword') {
       data.email = email;
     }
     
@@ -77,7 +87,26 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading }) => {
   const renderFields = () => {
     return (
       <>
-        {(type === 'login' || type === 'register' || type === 'forgotPassword') && (
+        {type === 'register-initial' && (
+          <div className="space-y-1">
+            <label htmlFor="name" className="text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your full name"
+              className={cn(errors.name && "border-red-500")}
+            />
+            {errors.name && (
+              <p className="text-xs text-red-500">{errors.name}</p>
+            )}
+          </div>
+        )}
+
+        {(type === 'login' || type === 'register' || type === 'forgotPassword' || type === 'register-initial') && (
           <div className="space-y-1">
             <label htmlFor="email" className="text-sm font-medium text-gray-700">
               Email
@@ -166,8 +195,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading }) => {
   const buttonText = {
     login: 'Sign In',
     register: 'Create Account',
+    'register-initial': 'Send Verification Code',
     forgotPassword: 'Send Reset Link',
-    resetPassword: 'Reset Password',
+    resetPassword: 'Complete Registration',
   };
 
   return (

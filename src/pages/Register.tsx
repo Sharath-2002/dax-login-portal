@@ -12,17 +12,19 @@ import { useToast } from '@/hooks/use-toast';
 const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [registrationData, setRegistrationData] = useState<RegisterData | null>(null);
-  const [step, setStep] = useState<'email-input' | 'otp-verification' | 'registration'>('email-input');
+  const [step, setStep] = useState<'registration-details' | 'otp-verification' | 'password-setup'>('registration-details');
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Step 1: Request OTP
-  const handleRequestOtp = async (data: { email: string }) => {
+  // Step 1: Collect user details and request OTP
+  const handleInitialSubmit = async (data: { name: string, email: string }) => {
     setIsLoading(true);
     try {
-      await authService.requestRegistrationOtp(data.email);
+      setName(data.name);
       setEmail(data.email);
+      await authService.requestRegistrationOtp(data.email);
       setStep('otp-verification');
       toast({
         title: 'OTP Sent!',
@@ -62,7 +64,7 @@ const Register: React.FC = () => {
 
   // After OTP verification
   const handleOtpVerified = () => {
-    setStep('registration');
+    setStep('password-setup');
   };
 
   // Step 3: Complete Registration
@@ -71,6 +73,7 @@ const Register: React.FC = () => {
     try {
       setRegistrationData(data);
       await authService.completeRegistration({
+        name: name,
         email: email, // Use the verified email
         password: data.password,
         confirmPassword: data.confirmPassword
@@ -94,7 +97,7 @@ const Register: React.FC = () => {
 
   const renderStep = () => {
     switch (step) {
-      case 'email-input':
+      case 'registration-details':
         return (
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -102,8 +105,8 @@ const Register: React.FC = () => {
             </CardHeader>
             <CardContent>
               <AuthForm 
-                type="forgotPassword" // We reuse the forgotPassword form type as it only has email field
-                onSubmit={handleRequestOtp} 
+                type="register-initial" // New type for initial registration
+                onSubmit={handleInitialSubmit} 
                 isLoading={isLoading} 
               />
             </CardContent>
@@ -128,7 +131,7 @@ const Register: React.FC = () => {
           />
         );
 
-      case 'registration':
+      case 'password-setup':
         return (
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -139,7 +142,7 @@ const Register: React.FC = () => {
                 Email verified: <span className="font-medium">{email}</span>
               </div>
               <AuthForm 
-                type="resetPassword" // We reuse the resetPassword form type as it only has password fields
+                type="resetPassword" // We reuse the resetPassword form type for password fields
                 onSubmit={handleRegister} 
                 isLoading={isLoading} 
               />

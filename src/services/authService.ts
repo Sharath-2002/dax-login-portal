@@ -13,6 +13,7 @@ export const authService = {
             user: {
               id: '1',
               email: credentials.email,
+              name: 'User',
               isVerified: true
             },
             token: 'dummy-jwt-token'
@@ -127,6 +128,7 @@ export const authService = {
     return {
       id: '1',
       email: 'user@example.com',
+      name: 'User',
       isVerified: true
     };
   }
